@@ -1,0 +1,1737 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>код к ДЗ день 6 задание 1 итерация 4</title>
+  <meta name="description" content="Питомник «Роса»: декоративные деревья и кустарники, хвойные, многолетники. Саженцы с фитоконтролем, доставка по РФ, консультация агронома.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <style>
+    /* ===== RESET & BASE ===== */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg: #F6F3EE;
+      --bg-alt: #EFEAE1;
+      --card: #FFFFFF;
+      --border: #E2DCD2;
+      --text: #232823;
+      --text-muted: #6E726A;
+      --line: #DCD6CB;
+      --accent: #3C5A45;
+      --accent-hover: #4E6F58;
+      --radius: 12px;
+      --radius-lg: 18px;
+      --font-head: 'Fraunces', serif;
+      --font-body: 'Inter', sans-serif;
+      --header-h: 62px;
+      --gap: 16px;
+      --transition: 0.25s ease;
+    }
+    html { scroll-behavior: smooth; }
+    html, body { overflow-x: hidden; }
+    body {
+      font-family: var(--font-body);
+      background: var(--bg);
+      color: var(--text);
+      font-size: 17px;
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+    body.popup-open { overflow: hidden; }
+    img { display: block; max-width: 100%; height: auto; }
+    a { color: inherit; text-decoration: none; }
+    button, input, textarea { font: inherit; }
+    .container {
+      width: min(1240px, 100% - 40px);
+      margin-inline: auto;
+      min-width: 0;
+    }
+    .section { padding: 96px 0; }
+    .section--alt { background: var(--bg-alt); }
+
+    /* ===== TYPOGRAPHY ===== */
+    h1, h2, h3 { font-family: var(--font-head); font-weight: 600; line-height: 1.12; letter-spacing: -0.02em; }
+    h1 { font-size: clamp(2rem, 5vw, 4.4rem); }
+    h2 { font-size: clamp(1.6rem, 3.4vw, 3rem); }
+    h3 { font-size: clamp(1.05rem, 1.4vw, 1.3rem); }
+    .overline {
+      font-family: var(--font-body);
+      font-size: 0.72rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--accent);
+      display: inline-block;
+      margin-bottom: 12px;
+    }
+    .text-muted { color: var(--text-muted); }
+
+    /* ===== BUTTONS ===== */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      min-height: 50px;
+      padding: 0 26px;
+      border-radius: 999px;
+      border: 1px solid transparent;
+      background: var(--accent);
+      color: #fff;
+      font-weight: 600;
+      font-size: 0.95rem;
+      letter-spacing: 0.01em;
+      cursor: pointer;
+      transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1), 
+                  background var(--transition), 
+                  box-shadow var(--transition), 
+                  border-color var(--transition), 
+                  color var(--transition);
+      white-space: nowrap;
+    }
+    .btn:hover { 
+      background: var(--accent-hover); 
+      box-shadow: 0 8px 20px rgba(60, 90, 69, 0.16); 
+      transform: translateY(-3px);
+    }
+    .btn:active { transform: translateY(0); }
+    .btn--outline {
+      background: transparent;
+      color: var(--accent);
+      border-color: var(--accent);
+    }
+    .btn--outline:hover { background: rgba(60, 90, 69, 0.06); box-shadow: none; }
+    .btn--small { min-height: 42px; padding: 0 18px; font-size: 0.86rem; }
+
+    .btn--light {
+      background: var(--bg);
+      border-color: var(--bg);
+      color: var(--text);
+      box-shadow: 0 6px 22px rgba(20, 28, 22, 0.22);
+    }
+    .btn--light:hover {
+      background: #E7E1D4;
+      border-color: #E7E1D4;
+      color: var(--text);
+      box-shadow: 0 12px 28px rgba(20, 28, 22, 0.28);
+    }
+
+    .btn--ghost {
+      background: rgba(255, 255, 255, 0.08);
+      border-color: rgba(255, 255, 255, 0.4);
+      color: #fff;
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      box-shadow: none;
+    }
+    .btn--ghost:hover {
+      background: #fff;
+      border-color: #fff;
+      color: var(--text);
+      box-shadow: 0 8px 24px rgba(20, 28, 22, 0.2);
+    }
+
+    /* ===== HEADER (Матовое стекло без рамок) ===== */
+    .site-header {
+      position: fixed;
+      inset: 0 0 auto 0;
+      z-index: 100;
+      height: var(--header-h);
+      /* Темное полупрозрачное стекло на основе цвета --text для контраста со светлым текстом */
+      background: rgba(35, 40, 35, 0.45);
+      /* Плотный блюр, чтобы фон под шапкой превращался в однородную матовую массу */
+      backdrop-filter: blur(30px) saturate(160%);
+      -webkit-backdrop-filter: blur(30px) saturate(160%);
+      /* Убираем рамки и тени по запросу */
+      border-bottom: none;
+      box-shadow: none;
+      transition: transform 0.2s ease, background 0.3s ease;
+      will-change: transform;
+    }
+
+    /* Фолбэк: если браузер не поддерживает блюр, делаем фон темнее для читаемости */
+    @supports not (backdrop-filter: blur(1px)) {
+      .site-header {
+        background: rgba(35, 40, 35, 0.85);
+      }
+    }
+
+    .site-header.is-hidden { transform: translateY(-100%); }
+    .header-inner {
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+    }
+    
+    /* Осветляем логотип */
+    .logo {
+      display: inline-flex;
+      align-items: baseline;
+      gap: 6px;
+      font-family: var(--font-head);
+      font-weight: 400;
+      font-size: 1.3rem;
+      letter-spacing: -0.02em;
+      color: #fff; /* Белый */
+      line-height: 1;
+      white-space: nowrap;
+      transition: opacity var(--transition);
+    }
+    .logo:hover { opacity: 0.8; }
+    .logo-sub {
+      font-family: var(--font-body);
+      font-weight: 400;
+      font-size: 0.78rem;
+      color: rgba(255, 255, 255, 0.7); /* Полупрозрачный белый */
+      letter-spacing: 0.02em;
+    }
+    
+    /* Осветляем навигацию */
+    .main-nav { display: flex; align-items: center; gap: 26px; }
+    .main-nav a {
+      font-size: 0.9rem;
+      font-weight: 500;
+      color: rgba(255, 255, 255, 0.9);
+      transition: color var(--transition);
+      position: relative;
+    }
+    .main-nav a::after {
+      content: '';
+      position: absolute;
+      left: 0; bottom: -5px;
+      width: 0; height: 1px;
+      background: #fff;
+      transition: width var(--transition);
+    }
+    .main-nav a:hover { color: #fff; }
+    .main-nav a:hover::after { width: 100%; }
+    
+    .header-actions { display: flex; align-items: center; gap: 14px; }
+    
+    /* Осветляем телефон */
+    .header-phone {
+      font-weight: 600;
+      font-size: 0.88rem;
+      color: #fff;
+      transition: color var(--transition);
+      white-space: nowrap;
+    }
+    .header-phone:hover { color: rgba(255, 255, 255, 0.7); }
+    
+    /* Светлая кнопка в шапке вместо темной */
+    .header-cta { 
+      min-height: 40px; 
+      padding: 0 18px; 
+      font-size: 0.84rem; 
+      background: transparent;
+      color: #fff;
+      border-color: rgba(255, 255, 255, 0.4);
+      transition: all var(--transition);
+    }
+    .header-cta:hover {
+      background: #fff;
+      color: var(--text);
+      border-color: #fff;
+      box-shadow: none;
+    }
+
+    /* Бургер (светлый) */
+    .burger {
+      display: none;
+      width: 40px; height: 40px;
+      background: none; border: none; cursor: pointer;
+      position: relative;
+      padding: 0;
+      flex-shrink: 0;
+    }
+    .burger span {
+      display: block;
+      position: absolute;
+      left: 10px;
+      width: 20px; height: 2px;
+      background: #fff; /* Белый */
+      border-radius: 2px;
+      transition: 0.25s ease;
+    }
+    .burger span:nth-child(1) { top: 13px; }
+    .burger span:nth-child(2) { top: 19px; }
+    .burger span:nth-child(3) { top: 25px; }
+
+    /* Mobile menu */
+    .mobile-menu {
+      position: fixed;
+      top: 0; right: 0;
+      width: min(320px, 85vw);
+      height: 100vh;
+      height: 100dvh;
+      background: var(--bg);
+      border-left: 1px solid var(--line);
+      z-index: 200;
+      padding: 72px 24px 28px;
+      transform: translateX(105%);
+      transition: transform 0.3s ease;
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+      overflow-y: auto;
+    }
+    .mobile-menu.is-open { transform: translateX(0); }
+    .menu-close {
+      position: absolute;
+      top: 14px; right: 14px;
+      width: 40px; height: 40px;
+      background: none; border: none;
+      font-size: 1.7rem;
+      color: var(--text-muted);
+      cursor: pointer;
+      line-height: 1;
+      border-radius: 50%;
+      transition: background var(--transition), color var(--transition);
+    }
+    .menu-close:hover { background: rgba(0, 0, 0, 0.04); color: var(--text); }
+    .mobile-menu nav { display: flex; flex-direction: column; }
+    .mobile-menu nav a {
+      padding: 14px 0;
+      font-size: 1rem;
+      font-family: var(--font-head);
+      font-weight: 500;
+      border-bottom: 1px solid var(--line);
+      color: var(--text);
+      transition: color var(--transition);
+    }
+    .mobile-menu nav a:hover { color: var(--accent); }
+    .mobile-menu-actions {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-top: auto;
+    }
+    .mobile-menu-actions .mobile-phone {
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--text);
+      text-align: center;
+    }
+    .menu-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(35, 40, 35, 0.4);
+      opacity: 0;
+      pointer-events: none;
+      z-index: 150;
+      transition: opacity 0.3s ease;
+    }
+    .menu-overlay.is-open { opacity: 1; pointer-events: auto; }
+    body.menu-open { overflow: hidden; }
+
+    /* ===== HERO ===== */
+    .hero {
+      position: relative;
+      min-height: 92vh;
+      min-height: 92svh;
+      display: flex;
+      align-items: flex-end;
+      padding-top: calc(var(--header-h) + 40px);
+      padding-bottom: 56px;
+      overflow: hidden;
+      color: #fff;
+    }
+    .hero-bg {
+      position: absolute;
+      inset: 0;
+      z-index: 0;
+      overflow: hidden;
+    }
+    .hero-bg img {
+      width: 100%; height: 100%;
+      object-fit: cover;
+      object-position: center 45%;
+      animation: heroZoom 22s ease-in-out infinite alternate;
+      transform-origin: 55% 45%;
+    }
+    @keyframes heroZoom {
+      0% { transform: scale(1) translate(0, 0); }
+      100% { transform: scale(1.12) translate(-1.5%, -1%); }
+    }
+
+    .hero::after {
+      content: '';
+      position: absolute; inset: 0;
+      z-index: 1;
+      pointer-events: none;
+      background:
+        linear-gradient(
+          90deg,
+          rgba(22, 28, 23, 0.74) 0%,
+          rgba(22, 28, 23, 0.58) 30%,
+          rgba(22, 28, 23, 0.38) 55%,
+          rgba(22, 28, 23, 0.17) 80%,
+          rgba(22, 28, 23, 0.06) 100%
+        ),
+        linear-gradient(
+          180deg,
+          rgba(22, 28, 23, 0.2) 0%,
+          rgba(22, 28, 23, 0.12) 38%,
+          rgba(22, 28, 23, 0.28) 78%,
+          rgba(22, 28, 23, 0.44) 100%
+        );
+    }
+
+    .hero .container { position: relative; z-index: 2; }
+    .hero-content { max-width: 820px; }
+    .hero h1 { color: #fff; text-wrap: balance; margin-bottom: 18px; text-shadow: 0 1px 2px rgba(0,0,0,0.16); }
+    .hero-sub {
+      font-size: clamp(0.95rem, 1.3vw, 1.15rem);
+      line-height: 1.55;
+      color: rgba(255, 255, 255, 0.92);
+      max-width: 600px;
+      margin-bottom: 28px;
+    }
+    .hero-cta {
+      margin-bottom: 36px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+    .hero-badges { display: flex; flex-wrap: wrap; gap: 8px; }
+    .hero-badge {
+      padding: 8px 16px;
+      border-radius: 999px;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      background: rgba(22, 28, 23, 0.32);
+      font-family: var(--font-body);
+      font-weight: 300;
+      font-size: 0.78rem;
+      letter-spacing: 0.02em;
+      color: rgba(255, 255, 255, 0.94);
+      line-height: 1.3;
+    }
+
+    /* ===== SECTION HEAD ===== */
+    .section-head {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 24px;
+      margin-bottom: 36px;
+      flex-wrap: wrap;
+    }
+    .section-head h2 { max-width: 700px; }
+    .section-head p { max-width: 460px; color: var(--text-muted); font-size: 0.95rem; }
+
+    /* ===== PRODUCTS ===== */
+    .products-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 18px;
+      align-items: stretch;
+    }
+    .product-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      transition: transform var(--transition), box-shadow var(--transition), border-color var(--transition);
+    }
+    .product-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 16px 40px rgba(35, 40, 35, 0.09);
+      border-color: var(--line);
+    }
+    .product-media {
+      aspect-ratio: 1 / 1;
+      overflow: hidden;
+      background: var(--bg-alt);
+      flex-shrink: 0;
+    }
+    .product-media img {
+      width: 100%; height: 100%;
+      object-fit: cover;
+      transition: transform 0.55s ease;
+    }
+    .product-card:hover .product-media img { transform: scale(1.04); }
+
+    .product-body {
+      padding: 18px 18px 20px;
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+      min-width: 0;
+    }
+    .product-tag {
+      font-size: 0.68rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--accent);
+      line-height: 1.4;
+      margin-bottom: 6px;
+    }
+    .product-title {
+      font-family: var(--font-head);
+      font-size: 1.1rem;
+      font-weight: 600;
+      line-height: 1.25;
+      letter-spacing: -0.01em;
+      min-height: 2.5em;
+      margin-bottom: 8px;
+    }
+    .product-meta {
+      display: flex;
+      flex-wrap: wrap;
+      align-content: flex-start;
+      gap: 2px 10px;
+      font-size: 0.76rem;
+      line-height: 1.45;
+      color: var(--text-muted);
+      min-height: 4.35em;
+    }
+    .product-meta span { display: block; }
+    .product-price {
+      font-weight: 700;
+      font-size: 1.08rem;
+      line-height: 1.3;
+      color: var(--text);
+      margin-top: 2px;
+      min-height: 1.3em;
+    }
+    .product-price .price-note {
+      font-weight: 400;
+      font-size: 0.78rem;
+      color: var(--text-muted);
+    }
+    .product-actions {
+      margin-top: auto;
+      padding-top: 16px;
+    }
+    .product-actions .btn { width: 100%; }
+
+    /* ===== WHY (Преимущества) ===== */
+    .why-grid {
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      gap: 18px;
+    }
+    .why-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 24px 22px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      transition: transform var(--transition), box-shadow var(--transition), border-color var(--transition), background-color var(--transition);
+      min-width: 0;
+      overflow: hidden;
+    }
+    .why-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 16px 36px rgba(35, 40, 35, 0.08);
+      border-color: var(--line);
+      background: #F1F5F2;
+    }
+    .why-card--accent {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: #fff;
+    }
+    .why-card--accent:hover {
+      background: var(--accent-hover);
+      border-color: var(--accent-hover);
+    }
+    .why-card--accent .why-num { color: rgba(255, 255, 255, 0.55); }
+    .why-card--accent .why-title { color: #fff; }
+    .why-card--accent .why-text { color: rgba(255, 255, 255, 0.82); }
+    
+    .why-num {
+      font-family: var(--font-head);
+      font-size: 1.7rem;
+      font-weight: 500;
+      color: var(--line);
+      line-height: 1;
+      transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), color 0.3s ease;
+      transform-origin: left center;
+    }
+    .why-card:hover .why-num {
+      transform: scale(1.15);
+      color: var(--accent);
+    }
+    .why-card--accent:hover .why-num {
+      color: #fff;
+    }
+    .why-title {
+      font-family: var(--font-head);
+      font-size: 1.25rem;
+      font-weight: 600;
+      line-height: 1.25;
+      letter-spacing: -0.01em;
+    }
+    .why-text { font-size: 0.84rem; line-height: 1.5; color: var(--text-muted); }
+    
+    .why-card:nth-child(1) { grid-column: span 3; }
+    .why-card:nth-child(2) { grid-column: span 3; }
+    .why-card:nth-child(3) { grid-column: span 2; }
+    .why-card:nth-child(4) { grid-column: span 2; }
+    .why-card:nth-child(5) { grid-column: span 2; }
+
+    /* ===== GALLERY ===== */
+    .gallery-controls { display: flex; gap: 10px; flex-shrink: 0; }
+    .gallery-arrow {
+      width: 46px; height: 46px;
+      border-radius: 50%;
+      border: 1px solid var(--line);
+      background: var(--card);
+      color: var(--text);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: border-color var(--transition), color var(--transition), background var(--transition), opacity var(--transition), transform var(--transition);
+    }
+    .gallery-arrow:hover:not(:disabled) { 
+      border-color: var(--accent); 
+      color: var(--accent); 
+      background: rgba(60, 90, 69, 0.05); 
+      transform: translateY(-2px);
+    }
+    .gallery-arrow:disabled { opacity: 0.32; cursor: default; }
+    .gallery-arrow svg { width: 18px; height: 18px; }
+
+    .gallery-viewport { overflow: hidden; }
+    .gallery-track {
+      display: flex;
+      gap: var(--gap);
+      transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+      will-change: transform;
+    }
+    .gallery-slide {
+      flex: 0 0 calc((100% - var(--gap)) / 2);
+      aspect-ratio: 4 / 3;
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      border: 1px solid var(--border);
+      background: var(--bg-alt);
+      cursor: zoom-in;
+    }
+    .gallery-slide img {
+      width: 100%; height: 100%;
+      object-fit: cover;
+      transition: transform 0.6s ease;
+    }
+    .gallery-slide:hover img { transform: scale(1.06); }
+
+    .gallery-dots {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 8px;
+      margin-top: 24px;
+    }
+    .gallery-dot {
+      width: 8px; height: 8px;
+      padding: 0;
+      border: none;
+      border-radius: 999px;
+      background: var(--line);
+      cursor: pointer;
+      transition: width var(--transition), background var(--transition);
+    }
+    .gallery-dot:hover { background: var(--text-muted); }
+    .gallery-dot.is-active { width: 26px; background: var(--accent); }
+
+    /* ===== CONTACTS ===== */
+    .contacts-intro { max-width: 720px; margin-bottom: 28px; }
+    .contacts-intro p { color: var(--text-muted); max-width: 480px; margin-top: 10px; font-size: 0.95rem; }
+
+    .contacts-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 28px;
+      align-items: stretch;
+    }
+
+    .contact-form {
+      display: flex;
+      flex-direction: column;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 26px;
+      min-width: 0;
+    }
+    .form-field { margin-bottom: 14px; }
+    .form-field label {
+      display: block;
+      font-size: 0.78rem;
+      font-weight: 600;
+      margin-bottom: 5px;
+      color: var(--text);
+    }
+    .form-field label .req { color: var(--accent); }
+    .form-field input,
+    .form-field textarea {
+      width: 100%;
+      border: 1px solid var(--line);
+      border-radius: 9px;
+      background: var(--bg);
+      padding: 12px 13px;
+      font-size: 0.92rem;
+      color: var(--text);
+      transition: border-color var(--transition), box-shadow var(--transition);
+    }
+    .form-field input:focus,
+    .form-field textarea:focus {
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(60, 90, 69, 0.12);
+    }
+    .form-field textarea { min-height: 92px; resize: vertical; }
+    .checkbox-row {
+      display: flex;
+      align-items: flex-start;
+      gap: 9px;
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      line-height: 1.45;
+      margin: 4px 0 14px;
+    }
+    .checkbox-row input {
+      width: 15px; height: 15px;
+      margin-top: 2px;
+      accent-color: var(--accent);
+      flex-shrink: 0;
+    }
+    .checkbox-row a { color: var(--accent); text-decoration: underline; text-underline-offset: 2px; }
+    .checkbox-row a:hover { color: var(--accent-hover); }
+
+    .form-footer { margin-top: auto; }
+    .form-submit { width: 100%; }
+
+    .contact-details {
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+      min-width: 0;
+    }
+    .contact-block {
+      flex-shrink: 0;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 22px;
+    }
+    .contact-block h3 { margin-bottom: 6px; }
+    .contact-address {
+      font-size: 0.88rem;
+      color: var(--text-muted);
+      line-height: 1.55;
+      margin-bottom: 10px;
+    }
+    .contact-phone {
+      display: inline-block;
+      font-weight: 600;
+      font-size: 0.98rem;
+      color: var(--text);
+      transition: color var(--transition);
+    }
+    .contact-phone:hover { color: var(--accent); }
+    .messengers { display: flex; gap: 10px; margin-top: 12px; }
+    .messenger-link {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 40px; height: 40px;
+      border-radius: 50%;
+      border: 1px solid var(--line);
+      background: var(--bg);
+      transition: border-color var(--transition), background var(--transition), transform var(--transition);
+    }
+    .messenger-link:hover { border-color: var(--accent); background: rgba(60, 90, 69, 0.06); transform: translateY(-2px); }
+    .messenger-link svg { width: 18px; height: 18px; fill: var(--accent); }
+
+    .map-wrap {
+      flex: 1;
+      min-height: 240px;
+      position: relative;
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      border: 1px solid var(--border);
+      background: var(--bg-alt);
+    }
+    .map-wrap iframe {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      border: 0;
+    }
+
+    /* ===== POPUP ===== */
+    .popup-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 300;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+      background: rgba(20, 26, 21, 0.5);
+      backdrop-filter: blur(4px);
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+      transition: opacity 0.25s ease, visibility 0.25s ease;
+    }
+    .popup-overlay.is-open {
+      opacity: 1;
+      visibility: visible;
+      pointer-events: auto;
+    }
+    .popup {
+      position: relative;
+      width: min(420px, 100%);
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 34px 26px 26px;
+      text-align: center;
+      box-shadow: 0 24px 64px rgba(20, 26, 21, 0.28);
+      transform: translateY(14px) scale(0.98);
+      transition: transform 0.25s ease;
+    }
+    .popup-overlay.is-open .popup { transform: none; }
+    .popup-close {
+      position: absolute;
+      top: 10px; right: 10px;
+      width: 36px; height: 36px;
+      border: none;
+      background: none;
+      font-size: 1.5rem;
+      line-height: 1;
+      color: var(--text-muted);
+      cursor: pointer;
+      border-radius: 50%;
+      transition: background var(--transition), color var(--transition);
+    }
+    .popup-close:hover { background: rgba(35, 40, 35, 0.05); color: var(--text); }
+    .popup-icon {
+      width: 56px; height: 56px;
+      border-radius: 50%;
+      background: rgba(60, 90, 69, 0.1);
+      color: var(--accent);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 16px;
+    }
+    .popup-icon svg { width: 26px; height: 26px; }
+    .popup h3 {
+      font-family: var(--font-head);
+      font-size: 1.3rem;
+      font-weight: 600;
+      letter-spacing: -0.01em;
+      margin-bottom: 8px;
+    }
+    .popup p {
+      font-size: 0.9rem;
+      line-height: 1.55;
+      color: var(--text-muted);
+      margin-bottom: 22px;
+    }
+    .popup .btn { width: 100%; }
+
+    /* ===== LIGHTBOX ===== */
+    .lightbox {
+      position: fixed;
+      inset: 0;
+      z-index: 400;
+      background: rgba(15, 20, 16, 0.85);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+      transition: opacity 0.3s ease, visibility 0.3s ease;
+    }
+    .lightbox.is-open {
+      opacity: 1;
+      visibility: visible;
+      pointer-events: auto;
+    }
+    .lightbox-img {
+      max-width: 90vw;
+      max-height: 85vh;
+      border-radius: var(--radius-lg);
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+      transform: scale(0.96);
+      transition: transform 0.3s ease;
+    }
+    .lightbox.is-open .lightbox-img {
+      transform: scale(1);
+    }
+    .lightbox-close {
+      position: absolute;
+      top: 24px;
+      right: 24px;
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      color: #fff;
+      font-size: 2rem;
+      line-height: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: background var(--transition), transform var(--transition);
+    }
+    .lightbox-close:hover {
+      background: rgba(255, 255, 255, 0.25);
+      transform: scale(1.1);
+    }
+
+    /* ===== FOOTER (тёмный, акцентный) ===== */
+    .site-footer {
+      background: var(--accent);
+      color: rgba(255, 255, 255, 0.78);
+      padding: 48px 0 26px;
+    }
+    .footer-main {
+      display: grid;
+      grid-template-columns: 1.2fr 0.8fr 1fr;
+      gap: 36px;
+      margin-bottom: 34px;
+    }
+    .footer-brand .logo { margin-bottom: 12px; font-size: 1.2rem; color: #fff; }
+    .footer-brand .logo-sub { color: rgba(255, 255, 255, 0.62); }
+    .footer-brand p { font-size: 0.8rem; color: rgba(255, 255, 255, 0.7); line-height: 1.6; max-width: 320px; }
+    .footer-nav { display: flex; flex-direction: column; gap: 8px; }
+    .footer-nav a {
+      font-size: 0.86rem;
+      color: rgba(255, 255, 255, 0.78);
+      transition: color var(--transition);
+    }
+    .footer-nav a:hover { color: #fff; }
+    .footer-contacts { font-size: 0.84rem; color: rgba(255, 255, 255, 0.72); line-height: 1.65; }
+    .footer-contacts a { color: #fff; font-weight: 500; transition: color var(--transition); }
+    .footer-contacts a:hover { color: rgba(255, 255, 255, 0.72); }
+    .site-footer .messenger-link {
+      border-color: rgba(255, 255, 255, 0.28);
+      background: rgba(255, 255, 255, 0.08);
+    }
+    .site-footer .messenger-link:hover {
+      border-color: rgba(255, 255, 255, 0.7);
+      background: rgba(255, 255, 255, 0.16);
+    }
+    .site-footer .messenger-link svg { fill: #fff; }
+
+    .footer-bottom {
+      border-top: 1px solid rgba(255, 255, 255, 0.18);
+      padding-top: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      flex-wrap: wrap;
+      font-size: 0.74rem;
+      color: rgba(255, 255, 255, 0.62);
+    }
+    .footer-legal { display: flex; flex-wrap: wrap; gap: 6px 18px; }
+    .footer-legal a { color: rgba(255, 255, 255, 0.7); transition: color var(--transition); }
+    .footer-legal a:hover { color: #fff; }
+    .to-top {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 0.78rem;
+      font-weight: 500;
+      color: rgba(255, 255, 255, 0.78);
+      transition: color var(--transition);
+    }
+    .to-top:hover { color: #fff; }
+
+    /* ===== RESPONSIVE ===== */
+    @media (max-width: 1024px) {
+      :root { --header-h: 58px; }
+      body { font-size: 16px; }
+      h1 { font-size: 2.2rem; }
+      h2 { font-size: 1.75rem; }
+      .section { padding: 60px 0; }
+      .hero { min-height: 88svh; padding-bottom: 44px; }
+      .hero-sub { font-size: 0.98rem; }
+      .main-nav { display: none; }
+      .header-phone { display: none; }
+      .header-cta { display: none; }
+      .burger { display: block; }
+      .products-grid { grid-template-columns: repeat(2, 1fr); }
+      .product-media { aspect-ratio: 4 / 3; }
+      .why-grid { grid-template-columns: 1fr 1fr; }
+      .why-card:nth-child(1) { grid-column: span 2; }
+      .why-card:nth-child(2),
+      .why-card:nth-child(3),
+      .why-card:nth-child(4),
+      .why-card:nth-child(5) { grid-column: span 1; }
+      .contacts-grid { grid-template-columns: 1fr; }
+      .contact-form { padding: 22px; }
+      .footer-main { grid-template-columns: 1fr 1fr; }
+      .section-head { flex-direction: column; align-items: flex-start; gap: 14px; }
+      .gallery-controls { align-self: flex-end; }
+    }
+
+    @media (max-width: 768px) {
+      .hero::after {
+        background:
+          linear-gradient(
+            0deg,
+            rgba(18, 24, 19, 0.86) 0%,
+            rgba(18, 24, 19, 0.70) 28%,
+            rgba(18, 24, 19, 0.44) 58%,
+            rgba(18, 24, 19, 0.18) 82%,
+            rgba(18, 24, 19, 0.06) 100%
+          );
+      }
+      .gallery-slide {
+        flex: 0 0 100%;
+        aspect-ratio: 1 / 1;
+      }
+    }
+
+    @media (max-width: 640px) {
+      .container { width: calc(100% - 32px); }
+      body { font-size: 15px; }
+      h1 { font-size: 1.8rem; }
+      h2 { font-size: 1.42rem; }
+      h3 { font-size: 1.05rem; }
+      .section { padding: 46px 0; }
+      .hero { min-height: 88svh; padding-bottom: 36px; padding-top: calc(var(--header-h) + 30px); }
+      .hero-sub { font-size: 0.93rem; margin-bottom: 22px; }
+      .hero-cta { margin-bottom: 28px; }
+      .hero-badge { padding: 7px 12px; font-size: 0.72rem; }
+      .products-grid { grid-template-columns: 1fr; gap: 14px; }
+      .product-body { padding: 16px; }
+      .product-title { font-size: 1.06rem; }
+      .why-grid { grid-template-columns: 1fr; }
+      .why-card:nth-child(n) { grid-column: span 1; }
+      .why-num { font-size: 1.5rem; }
+      .why-title { font-size: 1.15rem; }
+      .why-text { font-size: 0.82rem; }
+      .gallery-arrow { width: 42px; height: 42px; }
+      .gallery-dots { margin-top: 20px; }
+      .contact-form { padding: 20px 16px; }
+      .contact-block { padding: 18px; }
+      .map-wrap { min-height: 220px; }
+      .footer-main { grid-template-columns: 1fr; gap: 24px; }
+      .footer-bottom { flex-direction: column; align-items: flex-start; }
+      .footer-legal { gap: 6px 14px; }
+      .logo { font-size: 1.18rem; }
+      .logo-sub { font-size: 0.72rem; }
+      .btn { min-height: 48px; padding: 0 20px; font-size: 0.9rem; }
+      .popup { padding: 30px 20px 22px; }
+      .popup h3 { font-size: 1.18rem; }
+      .lightbox-close { top: 16px; right: 16px; width: 40px; height: 40px; font-size: 1.6rem; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .hero-bg img { animation: none; }
+      * { transition-duration: 0.01ms !important; }
+      html { scroll-behavior: auto; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ===== HEADER ===== -->
+  <header class="site-header" id="siteHeader">
+    <div class="container header-inner">
+      <a class="logo" href="#hero" aria-label="Питомник Роса — на главную">
+        <span class="logo-main">Роса</span>
+        <span class="logo-sub">питомник</span>
+      </a>
+
+      <nav class="main-nav" aria-label="Основная навигация">
+        <a href="#products">Растения</a>
+        <a href="#gallery">Галерея</a>
+        <a href="#why">Почему мы</a>
+        <a href="#contacts">Контакты</a>
+      </nav>
+
+      <div class="header-actions">
+        <a class="header-phone" href="tel:+79180000000">8 918 000 00 00</a>
+        <a class="btn header-cta" href="#contacts">Подобрать растения</a>
+        <button class="burger" id="burger" type="button" aria-label="Открыть меню" aria-expanded="false" aria-controls="mobileMenu">
+          <span></span><span></span><span></span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- ===== MOBILE MENU ===== -->
+  <div class="mobile-menu" id="mobileMenu" aria-hidden="true">
+    <button class="menu-close" id="menuClose" type="button" aria-label="Закрыть меню">×</button>
+    <nav aria-label="Мобильная навигация">
+      <a href="#products">Растения</a>
+      <a href="#gallery">Галерея</a>
+      <a href="#why">Почему мы</a>
+      <a href="#contacts">Контакты</a>
+    </nav>
+    <div class="mobile-menu-actions">
+      <a class="mobile-phone" href="tel:+79180000000">8 918 000 00 00</a>
+      <a class="btn" href="#contacts">Подобрать растения</a>
+    </div>
+  </div>
+  <div class="menu-overlay" id="menuOverlay"></div>
+
+  <!-- ===== HERO ===== -->
+  <section class="hero" id="hero">
+    <div class="hero-bg" aria-hidden="true">
+      <img src="images/rosa1.jpg" alt="">
+    </div>
+    <div class="container">
+      <div class="hero-content">
+        <h1>Идеальные саженцы для ваших проектов.<br>Поставка точно в срок</h1>
+        <p class="hero-sub">Надёжный поставщик качественного посадочного материала для бизнеса. Каждая позиция проходит фитоконтроль перед отправкой.</p>
+        <div class="hero-cta">
+          <a class="btn btn--light" href="#contacts">Заказать консультацию</a>
+          <button class="btn btn--ghost" id="specialOfferBtn" type="button" onclick="getSpecialOffer()">Получить спецпредложение</button>
+        </div>
+        <div class="hero-badges">
+          <span class="hero-badge">Формируем заказ за 24 часа</span>
+          <span class="hero-badge">Бережная доставка по РФ</span>
+          <span class="hero-badge">Гибкая система скидок от 50 единиц</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== PRODUCTS ===== -->
+  <section class="section" id="products">
+    <div class="container">
+      <div class="section-head">
+        <div>
+          <span class="overline">Каталог</span>
+          <h2>Популярные растения этого сезона</h2>
+        </div>
+        <p>Отобранные позиции, которые чаще всего заказывают ландшафтные дизайнеры и садоводы. Все саженцы прошли фитоконтроль.</p>
+      </div>
+
+      <div class="products-grid">
+        <article class="product-card">
+          <div class="product-media">
+            <img src="images/melba.webp" alt="Саженец яблони Мельба" loading="lazy">
+          </div>
+          <div class="product-body">
+            <span class="product-tag">Плодовые деревья</span>
+            <h3 class="product-title">Яблоня «Мельба»</h3>
+            <div class="product-meta">
+              <span>Возраст: 2 года</span>
+              <span>Корневая: ОКС</span>
+              <span>В наличии: 50+ шт.</span>
+            </div>
+            <div class="product-price">1 200 ₽</div>
+            <div class="product-actions">
+              <a class="btn btn--outline btn--small" href="#contacts">Заказать консультацию</a>
+            </div>
+          </div>
+        </article>
+
+        <article class="product-card">
+          <div class="product-media">
+            <img src="images/gortenziya.jpg" alt="Гортензия метельчатая Лаймлайт" loading="lazy">
+          </div>
+          <div class="product-body">
+            <span class="product-tag">Декоративные кустарники</span>
+            <h3 class="product-title">Гортензия метельчатая «Лаймлайт»</h3>
+            <div class="product-meta">
+              <span>Высота: 40–60 см</span>
+              <span>Корневая: ЗКС (Р9)</span>
+              <span>В наличии: 100+ шт.</span>
+            </div>
+            <div class="product-price">950 ₽</div>
+            <div class="product-actions">
+              <a class="btn btn--outline btn--small" href="#contacts">Заказать консультацию</a>
+            </div>
+          </div>
+        </article>
+
+        <article class="product-card">
+          <div class="product-media">
+            <img src="images/el-kolyuchaya-hupsi-150-175.jpg" alt="Ель колючая Хупси" loading="lazy">
+          </div>
+          <div class="product-body">
+            <span class="product-tag">Хвойные / Крупномеры</span>
+            <h3 class="product-title">Ель колючая «Хупси»</h3>
+            <div class="product-meta">
+              <span>Высота: 2,5–3 м</span>
+              <span>Упаковка: ком земли</span>
+              <span>Под заказ: 48 ч.</span>
+            </div>
+            <div class="product-price">18 500 ₽</div>
+            <div class="product-actions">
+              <a class="btn btn--outline btn--small" href="#contacts">Заказать консультацию</a>
+            </div>
+          </div>
+        </article>
+
+        <article class="product-card">
+          <div class="product-media">
+            <img src="images/spireya.jpg" alt="Спирея серая Грефшейм" loading="lazy">
+          </div>
+          <div class="product-body">
+            <span class="product-tag">Для живой изгороди</span>
+            <h3 class="product-title">Спирея серая «Грефшейм»</h3>
+            <div class="product-meta">
+              <span>Высота: 30–40 см</span>
+              <span>Корневая: ОКС</span>
+              <span>В наличии: рассада</span>
+            </div>
+            <div class="product-price">450 ₽ <span class="price-note">· акция 3+1</span></div>
+            <div class="product-actions">
+              <a class="btn btn--outline btn--small" href="#contacts">Заказать консультацию</a>
+            </div>
+          </div>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== WHY (Преимущества) ===== -->
+  <section class="section section--alt" id="why">
+    <div class="container">
+      <div class="section-head">
+        <div>
+          <span class="overline">Преимущества</span>
+          <h2>Почему клиенты выбирают «Росу»</h2>
+        </div>
+      </div>
+
+      <div class="why-grid">
+        <article class="why-card why-card--accent">
+          <span class="why-num">01</span>
+          <h3 class="why-title">Гарантия 100% приживаемости</h3>
+          <p class="why-text">Растения выращены в средней полосе. Если саженец погибнет в течение года — заменим бесплатно.</p>
+        </article>
+        <article class="why-card">
+          <span class="why-num">02</span>
+          <h3 class="why-title">Открытая корневая система (ОКС)</h3>
+          <p class="why-text">Вы видите живые, мощные корни без гнили. Никаких пересушенных горшков.</p>
+        </article>
+        <article class="why-card">
+          <span class="why-num">03</span>
+          <h3 class="why-title">Только районированные сорта</h3>
+          <p class="why-text">Морозостойкие деревья и кустарники, которые не вымерзнут зимой и не требуют сложного укрытия.</p>
+        </article>
+        <article class="why-card">
+          <span class="why-num">04</span>
+          <h3 class="why-title">Выкопка под заказ</h3>
+          <p class="why-text">Растение копают за 24 часа до отправки. Никакого хранения на складе — только свежевыкопанный материал.</p>
+        </article>
+        <article class="why-card">
+          <span class="why-num">05</span>
+          <h3 class="why-title">Агроном в подарок</h3>
+          <p class="why-text">Бесплатная консультация по подбору сортов под вашу почву и видеоинструкция по посадке в каждом заказе.</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== GALLERY ===== -->
+  <section class="section" id="gallery">
+    <div class="container">
+      <div class="section-head">
+        <div>
+          <span class="overline">Галерея</span>
+          <h2>Питомник в деталях</h2>
+        </div>
+        <div class="gallery-controls">
+          <button class="gallery-arrow" id="galleryPrev" type="button" aria-label="Предыдущие фотографии">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg>
+          </button>
+          <button class="gallery-arrow" id="galleryNext" type="button" aria-label="Следующие фотографии">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg>
+          </button>
+        </div>
+      </div>
+
+      <div class="gallery-viewport">
+        <div class="gallery-track" id="galleryTrack">
+          <div class="gallery-slide"><img src="images/g1.jpg" alt="Фотография питомника 1" loading="lazy"></div>
+          <div class="gallery-slide"><img src="images/g2.jpg" alt="Фотография питомника 2" loading="lazy"></div>
+          <div class="gallery-slide"><img src="images/g3.jpg" alt="Фотография питомника 3" loading="lazy"></div>
+          <div class="gallery-slide"><img src="images/g4.jpg" alt="Фотография питомника 4" loading="lazy"></div>
+          <div class="gallery-slide"><img src="images/g5.jpg" alt="Фотография питомника 5" loading="lazy"></div>
+          <div class="gallery-slide"><img src="images/g6.jpg" alt="Фотография питомника 6" loading="lazy"></div>
+          <div class="gallery-slide"><img src="images/g7.jpg" alt="Фотография питомника 7" loading="lazy"></div>
+          <div class="gallery-slide"><img src="images/g8.jpg" alt="Фотография питомника 8" loading="lazy"></div>
+          <div class="gallery-slide"><img src="images/g9.jpg" alt="Фотография питомника 9" loading="lazy"></div>
+          <div class="gallery-slide"><img src="images/g10.jpg" alt="Фотография питомника 10" loading="lazy"></div>
+        </div>
+      </div>
+
+      <div class="gallery-dots" id="galleryDots" aria-label="Пагинация галереи"></div>
+    </div>
+  </section>
+
+  <!-- ===== CONTACTS ===== -->
+  <section class="section section--alt" id="contacts">
+    <div class="container">
+      <div class="contacts-intro">
+        <span class="overline">Связаться с нами</span>
+        <h2>Получите консультацию за 10 минут</h2>
+        <p>Наши специалисты помогут подобрать растения под ваш проект, рассчитают стоимость и сроки поставки.</p>
+      </div>
+
+      <div class="contacts-grid">
+        <!-- LEFT: form -->
+        <form class="contact-form" id="contactForm" novalidate>
+          <div class="form-fields">
+            <div class="form-field">
+              <label for="name">Имя <span class="req">*</span></label>
+              <input type="text" id="name" name="name" placeholder="Как к вам обращаться" required>
+            </div>
+            <div class="form-field">
+              <label for="phone">Телефон <span class="req">*</span></label>
+              <input type="tel" id="phone" name="phone" placeholder="+7 (___) ___-__-__" required>
+            </div>
+            <div class="form-field">
+              <label for="comment">Комментарий</label>
+              <textarea id="comment" name="comment" placeholder="Расскажите о задаче или задайте вопрос"></textarea>
+            </div>
+            <label class="checkbox-row">
+              <input type="checkbox" id="consent" name="consent" required>
+              <span>Я согласен на обработку персональных данных и принимаю <a href="#" target="_blank" rel="noopener">политику конфиденциальности</a>.</span>
+            </label>
+          </div>
+          <div class="form-footer">
+            <button class="btn form-submit" type="submit">Заказать звонок</button>
+          </div>
+        </form>
+
+        <!-- RIGHT: contacts + map -->
+        <div class="contact-details">
+          <div class="contact-block">
+            <h3>Питомник «Роса»</h3>
+            <p class="contact-address">Калужская обл., с. Ивановское,<br>ул. Объездная, д. 7</p>
+            <a class="contact-phone" href="tel:+79180000000">8 918 000 00 00</a>
+            <div class="messengers">
+              <a class="messenger-link" href="https://max.ru" target="_blank" rel="noopener" aria-label="MAX">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 14H9V8h2v8zm4 0h-2v-4h2v4zm0-6h-2V8h2v2z"/></svg>
+              </a>
+              <a class="messenger-link" href="https://t.me" target="_blank" rel="noopener" aria-label="Telegram">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9.04 15.47l-.38 5.35c.54 0 .78-.23 1.06-.5l2.54-2.43 5.27 3.86c.97.53 1.66.25 1.92-.9L22.9 4.6c.3-1.4-.5-1.95-1.44-1.6L2.4 10.4c-1.37.53-1.35 1.3-.23 1.64l5.1 1.6L19.1 6.6c.56-.37 1.07-.17.65.2l-9.7 8.67z"/></svg>
+              </a>
+            </div>
+          </div>
+
+          <div class="map-wrap">
+            <iframe src="https://yandex.ru/map-widget/v1/?ll=36.26%2C54.51&z=11&pt=36.26,54.51,pm2rdm" title="Питомник Роса на карте" loading="lazy" allowfullscreen></iframe>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== FOOTER ===== -->
+  <footer class="site-footer">
+    <div class="container">
+      <div class="footer-main">
+        <div class="footer-brand">
+          <a class="logo" href="#hero">
+            <span class="logo-main">Роса</span>
+            <span class="logo-sub">питомник</span>
+          </a>
+          <p>ООО «Питомник «Роса»<br>ИНН 0000000000</p>
+        </div>
+        <nav class="footer-nav" aria-label="Навигация в подвале">
+          <a href="#products">Растения</a>
+          <a href="#gallery">Галерея</a>
+          <a href="#why">Почему мы</a>
+          <a href="#contacts">Контакты</a>
+        </nav>
+        <div class="footer-contacts">
+          <p>Калужская обл., с. Ивановское,<br>ул. Объездная, д. 7</p>
+          <p><a href="tel:+79180000000">8 918 000 00 00</a></p>
+          <div class="messengers">
+            <a class="messenger-link" href="https://max.ru" target="_blank" rel="noopener" aria-label="MAX">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 14H9V8h2v8zm4 0h-2v-4h2v4zm0-6h-2V8h2v2z"/></svg>
+            </a>
+            <a class="messenger-link" href="https://t.me" target="_blank" rel="noopener" aria-label="Telegram">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9.04 15.47l-.38 5.35c.54 0 .78-.23 1.06-.5l2.54-2.43 5.27 3.86c.97.53 1.66.25 1.92-.9L22.9 4.6c.3-1.4-.5-1.95-1.44-1.6L2.4 10.4c-1.37.53-1.35 1.3-.23 1.64l5.1 1.6L19.1 6.6c.56-.37 1.07-.17.65.2l-9.7 8.67z"/></svg>
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <div class="footer-bottom">
+        <div class="footer-legal">
+          <a href="#">Политика конфиденциальности</a>
+          <a href="#">Публичная оферта</a>
+          <a href="#">Согласие на обработку персональных данных</a>
+          <a href="#">Политика cookie</a>
+        </div>
+        <a class="to-top" href="#hero">Наверх ↑</a>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ===== POPUP: Заявка отправлена ===== -->
+  <div class="popup-overlay" id="popupOverlay" role="presentation" aria-hidden="true">
+    <div class="popup" role="dialog" aria-modal="true" aria-labelledby="popupTitle" aria-describedby="popupText">
+      <button class="popup-close" id="popupClose" type="button" aria-label="Закрыть уведомление">×</button>
+      <div class="popup-icon" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M20 6L9 17l-5-5"/>
+        </svg>
+      </div>
+      <h3 id="popupTitle">Заявка отправлена</h3>
+      <p id="popupText">Ожидайте звонок — специалист питомника свяжется с вами в течение 10 минут.</p>
+      <button class="btn" id="popupOk" type="button">Хорошо</button>
+    </div>
+  </div>
+
+  <!-- ===== POPUP: Спецпредложение ===== -->
+  <div class="popup-overlay" id="promoPopupOverlay" role="presentation" aria-hidden="true">
+    <div class="popup" role="dialog" aria-modal="true" aria-labelledby="promoPopupTitle" aria-describedby="promoPopupText">
+      <button class="popup-close" id="promoPopupClose" type="button" aria-label="Закрыть уведомление">×</button>
+      <div class="popup-icon" aria-hidden="true" style="background: rgba(60,90,69,0.15); color: var(--accent);">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"/>
+        </svg>
+      </div>
+      <h3 id="promoPopupTitle">Ваше спецпредложение</h3>
+      <p id="promoPopupText">Скидка 10% на первый заказ по промокоду <strong style="color:var(--accent); font-size:1.1em;">РОСА10</strong>!</p>
+      <button class="btn" id="promoPopupOk" type="button">Отлично</button>
+    </div>
+  </div>
+
+  <!-- ===== LIGHTBOX (Увеличение фото) ===== -->
+  <div class="lightbox" id="lightbox" aria-hidden="true" role="dialog">
+    <button class="lightbox-close" id="lightboxClose" type="button" aria-label="Закрыть увеличенное фото">&times;</button>
+    <img class="lightbox-img" id="lightboxImg" src="" alt="Увеличенное фото">
+  </div>
+
+  <script>
+    /* ===== ИСПРАВЛЕНИЕ ОШИБКИ (Практика) + Вызов поп-апа ===== */
+    function getSpecialOffer() {
+      const overlay = document.getElementById('promoPopupOverlay');
+      overlay.classList.add('is-open');
+      overlay.setAttribute('aria-hidden', 'false');
+      document.body.classList.add('popup-open');
+      document.getElementById('promoPopupOk').focus();
+    }
+
+    (function () {
+      const header = document.getElementById('siteHeader');
+      const burger = document.getElementById('burger');
+      const menu = document.getElementById('mobileMenu');
+      const menuClose = document.getElementById('menuClose');
+      const overlay = document.getElementById('menuOverlay');
+
+      /* ===== Header hide / show on scroll ===== */
+      let lastY = window.scrollY;
+      window.addEventListener('scroll', function () {
+        const y = window.scrollY;
+        const diff = y - lastY;
+        if (diff < -2) {
+          header.classList.remove('is-hidden');
+        } else if (diff > 4 && y > 100) {
+          header.classList.add('is-hidden');
+        }
+        lastY = y;
+      }, { passive: true });
+
+      /* ===== Mobile menu ===== */
+      function openMenu() {
+        header.classList.remove('is-hidden');
+        menu.classList.add('is-open');
+        overlay.classList.add('is-open');
+        burger.setAttribute('aria-expanded', 'true');
+        menu.setAttribute('aria-hidden', 'false');
+        document.body.classList.add('menu-open');
+      }
+
+      function closeMenu() {
+        menu.classList.remove('is-open');
+        overlay.classList.remove('is-open');
+        burger.setAttribute('aria-expanded', 'false');
+        menu.setAttribute('aria-hidden', 'true');
+        document.body.classList.remove('menu-open');
+      }
+
+      burger.addEventListener('click', openMenu);
+      menuClose.addEventListener('click', closeMenu);
+      overlay.addEventListener('click', closeMenu);
+
+      menu.querySelectorAll('a').forEach(function (link) {
+        link.addEventListener('click', closeMenu);
+      });
+
+      /* ===== Gallery slider ===== */
+      const track = document.getElementById('galleryTrack');
+      const slides = Array.prototype.slice.call(track.children);
+      const prevBtn = document.getElementById('galleryPrev');
+      const nextBtn = document.getElementById('galleryNext');
+      const dotsWrap = document.getElementById('galleryDots');
+
+      let gIndex = 0;
+      let lastPerView = 0;
+
+      function perView() {
+        return window.matchMedia('(max-width: 768px)').matches ? 1 : 2;
+      }
+      function stepSize() {
+        return perView();
+      }
+      function maxIndex() {
+        return Math.max(0, slides.length - perView());
+      }
+      function pageCount() {
+        return Math.floor(maxIndex() / stepSize()) + 1;
+      }
+
+      function buildDots() {
+        dotsWrap.innerHTML = '';
+        const total = pageCount();
+        for (let i = 0; i < total; i++) {
+          const dot = document.createElement('button');
+          dot.type = 'button';
+          dot.className = 'gallery-dot';
+          dot.setAttribute('aria-label', 'Страница галереи ' + (i + 1));
+          dot.addEventListener('click', (function (idx) {
+            return function () {
+              gIndex = Math.min(idx * stepSize(), maxIndex());
+              render(true);
+            };
+          })(i));
+          dotsWrap.appendChild(dot);
+        }
+      }
+
+      function render(animate) {
+        if (!slides.length) return;
+        const gapStyle = getComputedStyle(track).gap;
+        const gap = parseFloat(gapStyle) || 16;
+        const step = slides[0].getBoundingClientRect().width + gap;
+
+        if (animate === false) {
+          track.style.transition = 'none';
+        } else {
+          track.style.transition = '';
+        }
+
+        track.style.transform = 'translateX(' + (-gIndex * step) + 'px)';
+
+        if (animate === false) {
+          void track.offsetHeight;
+          track.style.transition = '';
+        }
+
+        prevBtn.disabled = gIndex <= 0;
+        nextBtn.disabled = gIndex >= maxIndex();
+
+        const activeDot = Math.round(gIndex / stepSize());
+        Array.prototype.forEach.call(dotsWrap.children, function (dot, i) {
+          dot.classList.toggle('is-active', i === activeDot);
+        });
+      }
+
+      prevBtn.addEventListener('click', function () {
+        if (gIndex > 0) {
+          gIndex = Math.max(0, gIndex - stepSize());
+          render(true);
+        }
+      });
+
+      nextBtn.addEventListener('click', function () {
+        if (gIndex < maxIndex()) {
+          gIndex = Math.min(maxIndex(), gIndex + stepSize());
+          render(true);
+        }
+      });
+
+      let touchStartX = null;
+      track.addEventListener('touchstart', function (e) {
+        touchStartX = e.touches[0].clientX;
+      }, { passive: true });
+      track.addEventListener('touchend', function (e) {
+        if (touchStartX === null) return;
+        const delta = e.changedTouches[0].clientX - touchStartX;
+        if (Math.abs(delta) > 40) {
+          if (delta < 0 && gIndex < maxIndex()) {
+            gIndex = Math.min(maxIndex(), gIndex + stepSize());
+          } else if (delta > 0 && gIndex > 0) {
+            gIndex = Math.max(0, gIndex - stepSize());
+          }
+          render(true);
+        }
+        touchStartX = null;
+      }, { passive: true });
+
+      let resizeTimer;
+      window.addEventListener('resize', function () {
+        clearTimeout(resizeTimer);
+        resizeTimer = setTimeout(function () {
+          const pv = perView();
+          if (pv !== lastPerView) {
+            lastPerView = pv;
+            gIndex = 0;
+            buildDots();
+          }
+          gIndex = Math.min(gIndex, maxIndex());
+          render(false);
+        }, 120);
+      });
+
+      lastPerView = perView();
+      buildDots();
+      render(false);
+
+      /* ===== POPUPS ===== */
+      const popupOverlay = document.getElementById('popupOverlay');
+      const popupClose = document.getElementById('popupClose');
+      const popupOk = document.getElementById('popupOk');
+      
+      const promoPopupOverlay = document.getElementById('promoPopupOverlay');
+      const promoPopupClose = document.getElementById('promoPopupClose');
+      const promoPopupOk = document.getElementById('promoPopupOk');
+
+      let lastFocused = null;
+
+      function openPopup(overlayEl, focusEl) {
+        lastFocused = document.activeElement;
+        overlayEl.classList.add('is-open');
+        overlayEl.setAttribute('aria-hidden', 'false');
+        document.body.classList.add('popup-open');
+        focusEl.focus();
+      }
+
+      function closePopup(overlayEl) {
+        overlayEl.classList.remove('is-open');
+        overlayEl.setAttribute('aria-hidden', 'true');
+        if (!document.querySelector('.popup-overlay.is-open') && !document.getElementById('lightbox').classList.contains('is-open')) {
+          document.body.classList.remove('popup-open');
+        }
+        if (lastFocused && typeof lastFocused.focus === 'function') {
+          lastFocused.focus();
+        }
+      }
+
+      // Закрытие обычного поп-апа
+      popupClose.addEventListener('click', function() { closePopup(popupOverlay); });
+      popupOk.addEventListener('click', function() { closePopup(popupOverlay); });
+      popupOverlay.addEventListener('click', function (e) {
+        if (e.target === popupOverlay) closePopup(popupOverlay);
+      });
+
+      // Закрытие поп-апа спецпредложения
+      promoPopupClose.addEventListener('click', function() { closePopup(promoPopupOverlay); });
+      promoPopupOk.addEventListener('click', function() { closePopup(promoPopupOverlay); });
+      promoPopupOverlay.addEventListener('click', function (e) {
+        if (e.target === promoPopupOverlay) closePopup(promoPopupOverlay);
+      });
+
+      /* ===== LIGHTBOX ===== */
+      const lightbox = document.getElementById('lightbox');
+      const lightboxImg = document.getElementById('lightboxImg');
+      const lightboxClose = document.getElementById('lightboxClose');
+
+      slides.forEach(function(slide) {
+        slide.addEventListener('click', function() {
+          const img = this.querySelector('img');
+          if (img) {
+            lightboxImg.src = img.src;
+            lightbox.classList.add('is-open');
+            lightbox.setAttribute('aria-hidden', 'false');
+            document.body.classList.add('popup-open');
+            lightboxClose.focus();
+          }
+        });
+      });
+
+      function closeLightbox() {
+        lightbox.classList.remove('is-open');
+        lightbox.setAttribute('aria-hidden', 'true');
+        setTimeout(function() { lightboxImg.src = ''; }, 300);
+        if (!document.querySelector('.popup-overlay.is-open')) {
+          document.body.classList.remove('popup-open');
+        }
+      }
+
+      lightboxClose.addEventListener('click', closeLightbox);
+      lightbox.addEventListener('click', function(e) {
+        if (e.target === lightbox) closeLightbox();
+      });
+
+      /* ESC закрывает всё */
+      document.addEventListener('keydown', function (e) {
+        if (e.key !== 'Escape') return;
+        if (lightbox.classList.contains('is-open')) {
+          closeLightbox();
+        } else if (promoPopupOverlay.classList.contains('is-open')) {
+          closePopup(promoPopupOverlay);
+        } else if (popupOverlay.classList.contains('is-open')) {
+          closePopup(popupOverlay);
+        } else {
+          closeMenu();
+        }
+      });
+
+      /* ===== Form validation & submit ===== */
+      const form = document.getElementById('contactForm');
+
+      form.addEventListener('submit', function (e) {
+        e.preventDefault();
+
+        const name = form.querySelector('#name');
+        const phone = form.querySelector('#phone');
+        const consent = form.querySelector('#consent');
+        let valid = true;
+
+        [name, phone].forEach(function (field) {
+          if (!field.value.trim()) {
+            field.style.borderColor = '#c0392b';
+            valid = false;
+          } else {
+            field.style.borderColor = '';
+          }
+        });
+
+        if (!consent.checked) {
+          valid = false;
+          consent.parentElement.style.color = '#c0392b';
+        } else {
+          consent.parentElement.style.color = '';
+        }
+
+        if (!valid) return;
+
+        form.reset();
+        openPopup(popupOverlay, popupOk);
+      });
+
+      /* ===== Smooth scroll ===== */
+      document.querySelectorAll('a[href^="#"]').forEach(function (link) {
+        link.addEventListener('click', function (e) {
+          const targetId = this.getAttribute('href');
+          if (targetId === '#') return;
+          const target = document.querySelector(targetId);
+          if (target) {
+            e.preventDefault();
+            target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          }
+        });
+      });
+    })();
+  </script>
+</body>
+</html>
